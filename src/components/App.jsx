@@ -3,13 +3,10 @@ import Header from './Header';
 import TicketList from './TicketList';
 import NewTicketControl from './NewTicketControl';
 import { Switch, Route } from 'react-router-dom';
-import
+import Moment from 'moment';
 
-let myStyledApp = {
-  backgroundColor: '#ecf0f1',
-  fontFamily: 'sans-serif',
-  paddingTop: '50px'
-};
+
+
 
 class App extends React.Component {
 
@@ -22,18 +19,40 @@ class App extends React.Component {
   }
 
   handleAddingNewTicketToList(newTicket){
-   var newMasterTicketList = this.state.masterTicketList.slice();
-   newMasterTicketList.push(newTicket);
-   this.setState({masterTicketList: newMasterTicketList});
+    var newMasterTicketList = this.state.masterTicketList.slice();
+    newTicket.formattedWaitTime = (newTicket.timeOpen).fromNow(true)
+    newMasterTicketList.push(newTicket);
+    this.setState({masterTicketList: newMasterTicketList});
   }
+
+  componentDidMount() {
+     this.waitTimeUpdateTimer = setInterval(() =>
+       this.updateTicketElapsedWaitTime(),
+       60000
+     );
+   }
+
+  updateTicketElapsedWaitTime() {
+   
+   let newMasterTicketList = this.state.masterTicketList.slice();
+   newMasterTicketList.forEach((ticket) =>
+     ticket.formattedWaitTime = (ticket.timeOpen).fromNow(true)
+   );
+   this.setState({masterTicketList: newMasterTicketList})
+ }
+
+ componentWillUnmount(){
+  clearInterval(this.waitTimeUpdateTimer);
+ }
 
   render(){
     return (
-      <div style={myStyledApp}>
+      <div>
         <Header/>
         <Switch>
-          <Route exact path='/' component={TicketList} />
+          <Route exact path='/' render={()=><TicketList ticketList={this.state.masterTicketList} />} />
           <Route path='/newticket' render={()=><NewTicketControl onNewTicketCreation={this.handleAddingNewTicketToList} />} />
+
         </Switch>
       </div>
     );
