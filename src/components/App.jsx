@@ -3,6 +3,7 @@ import Header from './Header';
 import TicketList from './TicketList';
 import NewTicketControl from './NewTicketControl';
 import { Switch, Route } from 'react-router-dom';
+import { v4 } from 'uuid';
 
 import Admin from './Admin';
 
@@ -21,17 +22,18 @@ class App extends React.Component {
     this.handleChangingSelectedTicket = this.handleChangingSelectedTicket.bind(this);
   }
   
-  handleChangingSelectedTicket(ticket){
-    this.setState({selectedTicket: ticket});
+  handleChangingSelectedTicket(ticketId){
+    this.setState({selectedTicket: ticketId});
   }
 
   handleAddingNewTicketToList(newTicket){
-  var newMasterTicketList = Object.assign({}, this.state.masterTicketList, {
-    [newTicket.id]: newTicket
-  });
-  newMasterTicketList[newTicket.id].formattedWaitTime = newMasterTicketList[newTicket.id].timeOpen.fromNow(true);
-  this.setState({masterTicketList: newMasterTicketList});
-}
+    var newTicketId = v4();
+    var newMasterTicketList = Object.assign({}, this.state.masterTicketList, {
+      [newTicketId]: newTicket
+    });
+    newMasterTicketList[newTicketId].formattedWaitTime = newMasterTicketList[newTicketId].timeOpen.fromNow(true);
+    this.setState({masterTicketList: newMasterTicketList});
+  }
 
   componentDidMount() {
     this.waitTimeUpdateTimer = setInterval(() =>
@@ -41,11 +43,10 @@ class App extends React.Component {
   }
 
   updateTicketElapsedWaitTime() {
-   
-    let newMasterTicketList = this.state.masterTicketList.slice();
-    newMasterTicketList.forEach((ticket) =>
-      ticket.formattedWaitTime = (ticket.timeOpen).fromNow(true)
-    );
+    var newMasterTicketList = Object.assign({}, this.state.masterTicketList);
+    Object.keys(newMasterTicketList).forEach(ticketId => {
+      newMasterTicketList[ticketId].formattedWaitTime = (newMasterTicketList[ticketId].timeOpen).fromNow(true);
+    });
     this.setState({masterTicketList: newMasterTicketList});
   }
 
