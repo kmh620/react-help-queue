@@ -5,9 +5,9 @@ import TicketDetail from './TicketDetail';
 
 function Admin(props){
   let optionalSelectedTicketContent = null;
-if (props.selectedTicket != null){
-  optionalSelectedTicketContent =  <TicketDetail selectedTicket={props.ticketList[props.selectedTicket]}/>;
-}
+  if (props.selectedTicket != null){
+    optionalSelectedTicketContent =  <TicketDetail selectedTicket={props.ticketList[props.selectedTicket]}/>;
+  }
   
   return (
     <div>
